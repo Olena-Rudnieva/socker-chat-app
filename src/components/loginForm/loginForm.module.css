@@ -1,0 +1,33 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 0 auto;
+}
+
+.wrapper {
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+.button {
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #60b7e3;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border: 1px solid #60b7e3;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: white;
+    color: #60b7e3;
+  }
+}

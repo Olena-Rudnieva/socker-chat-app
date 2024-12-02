@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.leftside {
+  width: 500px;
+  height: 100vh;
+  border-right: 1px solid #c2cbd4;
+  display: flex;
+  flex-direction: column;
+}
+
+.rightside {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+}

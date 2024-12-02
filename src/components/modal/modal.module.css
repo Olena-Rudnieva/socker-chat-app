@@ -1,0 +1,48 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(38, 38, 38, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  position: relative;
+  overflow-y: auto;
+  display: flex;
+  max-height: 100%;
+  width: 400px;
+  justify-content: center;
+  border-radius: 24px;
+  background-color: white;
+  padding: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: none;
+  z-index: 200;
+  cursor: pointer;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    fill: black;
+    transition: transform 0.3s ease-in-out, stroke 0.3s ease-in-out;
+
+    &:hover,
+    &:focus {
+      fill: #60b7e3;
+      transform: scale(1.2);
+    }
+  }
+}
