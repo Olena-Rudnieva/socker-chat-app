@@ -15,9 +15,13 @@
   display: flex;
   align-items: center;
   padding: 15px 30px;
-  margin-bottom: 10px;
   background-color: #ffffff;
   border-bottom: 1px solid #ccc;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c3e6f8;
+  }
 }
 
 .avatar {

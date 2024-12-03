@@ -12,7 +12,7 @@
 .form {
   display: flex;
   flex-direction: column;
-  width: 350px;
+  width: 300px;
   margin: 0 auto;
 }
 
@@ -23,7 +23,6 @@
 }
 
 .buttonWrapper {
-  /* width: 100%; */
   display: flex;
   justify-content: center;
   align-items: center;

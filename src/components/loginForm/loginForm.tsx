@@ -21,7 +21,6 @@ export const LoginForm = () => {
   const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
-    console.log('Дані форми:', data);
     axios
       .post(`${BASE_URL}/api/users/add`, data)
       .then((response) => {

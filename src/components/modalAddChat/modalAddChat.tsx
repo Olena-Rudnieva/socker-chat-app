@@ -1,34 +1,52 @@
+// import axios from 'axios';
+import { User } from '../../types';
 import styles from './modalAddChat.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
+// import { BASE_URL } from '../../constants/api';
 
 interface ModalAddChatProps {
+  user: User | null;
   handleModalToggle: () => void;
+  handleNewChat: (chatData: {
+    firstName: string;
+    lastName: string;
+    userId: string;
+  }) => void;
 }
 
 interface AddChatInputs {
   firstName: string;
   lastName: string;
+  userId: string;
 }
 
-export const ModalAddChat = ({ handleModalToggle }: ModalAddChatProps) => {
+export const ModalAddChat = ({
+  handleModalToggle,
+  user,
+  handleNewChat,
+}: ModalAddChatProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AddChatInputs>();
+  } = useForm<AddChatInputs>({
+    defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+    },
+  });
 
-  const onSubmit: SubmitHandler<AddChatInputs> = (data) => {
-    console.log('Дані форми:', data);
-    handleModalToggle();
+  const onSubmit: SubmitHandler<AddChatInputs> = async (data) => {
+    if (user) {
+      const chatData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        userId: user._id,
+      };
 
-    //   axios
-    //     .post(`${BASE_URL}/api/users/add`, data)
-    //     .then(() => {
-    //       navigate('/main');
-    //     })
-    //     .catch((error) => {
-    //       console.error( error);
-    //     });
+      handleNewChat(chatData);
+      handleModalToggle();
+    }
   };
 
   return (

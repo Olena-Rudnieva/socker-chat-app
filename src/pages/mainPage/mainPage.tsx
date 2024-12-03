@@ -1,24 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Chats, Header } from '../../components';
-import { User } from '../../types';
+import { ChatRoom, Chats, Header } from '../../components';
+import { Chat, User } from '../../types';
 import styles from './mainPage.module.css';
 import axios from 'axios';
-// import { io, Socket } from 'socket.io-client';
+import { BASE_URL } from '../../constants/api';
 
 const MainPage = () => {
   const [user, setUser] = useState<User | null>(null);
-  // const [socket, setSocket] = useState<Socket | null>(null);
-
-  // console.log('socket', socket);
-  console.log('user', user);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
     if (userId) {
       axios
-        .get(`/api/users/${userId}`)
+        .get(`${BASE_URL}/api/users/${userId}`)
         .then((response) => {
-          console.log('response.data', response.data);
           setUser(response.data);
         })
         .catch((error) => {
@@ -27,36 +23,18 @@ const MainPage = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      // const newSocket = io('http://localhost:5001');
-      // setSocket(newSocket);
-
-      const data = {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        room: `${user.firstName} ${user.lastName}`,
-      };
-
-      console.log('data', data);
-
-      // newSocket.emit('joinRoom', data);
-
-      // return () => {
-      //   newSocket.disconnect();
-      // };
-    }
-  }, [user]);
+  const handleChatSelect = (chat: Chat) => {
+    setSelectedChat(chat);
+  };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.leftside}>
         <Header user={user} />
-        <Chats />
+        <Chats user={user} handleChatSelect={handleChatSelect} />
       </div>
       <div className={styles.rightside}>
-        {/* <ChatRoom socket={socket}/> */}
+        <ChatRoom chat={selectedChat} user={user} />
       </div>
     </div>
   );

@@ -1,41 +1,50 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import styles from './chats.module.css';
 import { Modal } from '../modal';
 import { ModalAddChat } from '../modalAddChat';
+import { Chat, User } from '../../types';
+import axios from 'axios';
+import { BASE_URL } from '../../constants/api';
+import { formatDateForList, getLastMessage } from '../../utils';
 
-const сhats = [
-  {
-    id: 1,
-    avatar: 'https://via.placeholder.com/50',
-    firstName: 'John',
-    lastName: 'Doe',
-    lastMessage: 'Hello everyone!',
-    lastMessageDate: '2024-11-29 14:30',
-  },
-  {
-    id: 2,
-    avatar: 'https://via.placeholder.com/50',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    lastMessage: 'Did you check the latest update?',
-    lastMessageDate: '2024-11-29 13:45',
-  },
-  {
-    id: 3,
-    avatar: 'https://via.placeholder.com/50',
-    firstName: 'Alex',
-    lastName: 'Johnson',
-    lastMessage: 'Random thoughts for today...',
-    lastMessageDate: '2024-11-29 12:15',
-  },
-];
+interface ChatsProps {
+  user: User | null;
+  handleChatSelect: (chat: Chat) => void;
+}
 
-export const Chats = () => {
+export const Chats = ({ user, handleChatSelect }: ChatsProps) => {
+  const [chats, setChats] = useState<Chat[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const fetchChats = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/chats`);
+      setChats(response.data);
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
 
   const toggleModal = () => {
     setIsModalOpen((prevState) => !prevState);
+  };
+
+  const handleNewChat = async (chatData: {
+    firstName: string;
+    lastName: string;
+    userId: string;
+  }) => {
+    try {
+      const response = await axios.post('/api/chats', chatData);
+      setChats((prevChats) => [...prevChats, response.data]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -47,10 +56,14 @@ export const Chats = () => {
         </button>
       </div>
       <ul>
-        {сhats.map((chat) => (
-          <li key={chat.id} className={styles.chatItem}>
+        {chats.map((chat) => (
+          <li
+            key={chat._id}
+            className={styles.chatItem}
+            onClick={() => handleChatSelect(chat)}
+          >
             <img
-              src={chat.avatar}
+              src="https://via.placeholder.com/50"
               alt="User avatar"
               className={styles.avatar}
             />
@@ -60,17 +73,23 @@ export const Chats = () => {
                   {chat.firstName} {chat.lastName}
                 </strong>
                 <span className={styles.lastMessageDate}>
-                  {chat.lastMessageDate}
+                  {formatDateForList(getLastMessage(chat)?.timestamp || '')}
                 </span>
               </div>
-              <p className={styles.lastMessage}>{chat.lastMessage}</p>
+              <p className={styles.lastMessage}>
+                {getLastMessage(chat)?.message}
+              </p>
             </div>
           </li>
         ))}
       </ul>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={toggleModal}>
-          <ModalAddChat handleModalToggle={toggleModal} />
+          <ModalAddChat
+            handleModalToggle={toggleModal}
+            user={user}
+            handleNewChat={handleNewChat}
+          />
         </Modal>
       )}
     </div>
