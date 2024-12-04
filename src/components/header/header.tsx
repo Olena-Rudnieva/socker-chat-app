@@ -11,16 +11,22 @@ export const Header = ({ user }: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    axios.post('/api/users/logout').then(() => {
-      navigate('/');
-    });
+    axios
+      .post('/api/users/logout')
+      .then(() => {
+        localStorage.removeItem('userId');
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Error logging out:', error);
+      });
   };
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.user}>
         <div className={styles.image}>
-          <img src="https://via.placeholder.com/40" alt="Avatar" />
+          <img src="/user.png" alt="Avatar" />
         </div>
         {user && (
           <p>

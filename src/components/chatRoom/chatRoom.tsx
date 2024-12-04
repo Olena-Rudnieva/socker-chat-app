@@ -1,26 +1,35 @@
 import { Chat, User } from '../../types';
 import styles from './chatRoom.module.css';
 import { FaPaperPlane } from 'react-icons/fa';
+import { BsFillPencilFill } from 'react-icons/bs';
+import { FaTrashAlt } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { formatDate } from '../../utils';
-import { BASE_URL } from '../../constants/api';
+// import { BASE_URL } from '../../constants/api';
+import { Modal } from '../modal';
+import { ModalConfirmDelete } from '../modalConfirmDelete';
+import { ModalEditChat } from '../modalEditChat';
+import { toast } from 'react-toastify';
+
 // import { io, Socket } from 'socket.io-client';
+
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 interface ChatRoomProps {
   chat: Chat | null;
   user: User | null;
+  setChats: React.Dispatch<React.SetStateAction<Chat[]>>;
 }
 
-export const ChatRoom = ({ chat, user }: ChatRoomProps) => {
+export const ChatRoom = ({ chat, user, setChats }: ChatRoomProps) => {
   // const [socket, setSocket] = useState<Socket | null>(null);
 
   const [messages, setMessages] = useState(chat?.messages || []);
   const [message, setMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  console.log('chat in ChatRoom', chat);
-  console.log('messages', messages);
 
   useEffect(() => {
     if (chat && chat.messages) {
@@ -46,8 +55,16 @@ export const ChatRoom = ({ chat, user }: ChatRoomProps) => {
         `${BASE_URL}/api/chats/${chat._id}/message`,
         newMessage
       );
-      setMessages(response.data.messages);
+
+      const updatedMessages = response.data.messages;
+      setMessages(updatedMessages);
       setMessage('');
+
+      setChats((prevChats) =>
+        prevChats.map((c) =>
+          c._id === chat._id ? { ...c, messages: updatedMessages } : c
+        )
+      );
 
       setTimeout(async () => {
         try {
@@ -58,13 +75,76 @@ export const ChatRoom = ({ chat, user }: ChatRoomProps) => {
             }
           );
 
-          setMessages(chatWithAutoResponse.data.messages);
+          const autoUpdatedMessages = chatWithAutoResponse.data.messages;
+          setMessages(autoUpdatedMessages);
+
+          setChats((prevChats) =>
+            prevChats.map((c) =>
+              c._id === chat._id ? { ...c, messages: autoUpdatedMessages } : c
+            )
+          );
+
+          toast.info('New message received!');
         } catch (autoError) {
           console.error('Error in auto-response:', autoError);
         }
       }, 3000);
     } catch (error) {
       console.error('Error sending message:', error);
+    }
+  };
+
+  const toggleModal = (edit: boolean) => {
+    setIsEdit(edit);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteChat = async () => {
+    try {
+      const response = await axios.delete(`${BASE_URL}/api/chats/${chat?._id}`);
+      if (response.status === 200) {
+        console.log('Chat deleted successfully');
+        setMessages([]);
+        closeModal();
+        setChats((prevChats) => prevChats.filter((c) => c._id !== chat?._id));
+      }
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+    }
+  };
+
+  const handleUpdateChat = async (data: {
+    firstName: string;
+    lastName: string;
+  }) => {
+    if (chat) {
+      try {
+        console.log('updatedChat', data);
+        const updatedChat = {
+          ...data,
+          userId: chat.userId,
+        };
+
+        const response = await axios.put(
+          `${BASE_URL}/api/chats/${chat._id}`,
+          updatedChat
+        );
+        if (response.status === 200) {
+          console.log('Chat updated successfully');
+          setChats((prevChats) =>
+            prevChats.map((c) =>
+              c._id === chat._id ? { ...c, ...updatedChat } : c
+            )
+          );
+          closeModal();
+        }
+      } catch (error) {
+        console.error('Error updating chat:', error);
+      }
     }
   };
 
@@ -97,19 +177,36 @@ export const ChatRoom = ({ chat, user }: ChatRoomProps) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.titleWrapper}>
-        <div className={styles.image}>
-          <img src="https://via.placeholder.com/40" alt="Avatar" />
+      <div className={styles.upperBlock}>
+        <div className={styles.titleWrapper}>
+          <div className={styles.image}>
+            <img src="/user.png" alt="Avatar" />
+          </div>
+          <h3 className={styles.title}>
+            {chat.firstName} {chat.lastName}
+          </h3>
         </div>
-        <h3 className={styles.title}>
-          {chat.firstName} {chat.lastName}
-        </h3>
+        <div className={styles.icons}>
+          <button
+            className={styles.iconButton}
+            onClick={() => toggleModal(true)}
+          >
+            <BsFillPencilFill />
+          </button>
+          <button
+            className={styles.iconButton}
+            onClick={() => toggleModal(false)}
+          >
+            <FaTrashAlt />
+          </button>
+        </div>
       </div>
+
       <div className={styles.blockWrapper}>
         <ul className={styles.messagesList}>
           {messages.map((msg, index) => {
             const isOwnMessage =
-              msg.sender === `${user?.firstName} ${user?.lastName}`;
+              msg.sender === `${chat?.firstName} ${chat?.lastName}`;
             return (
               <li
                 key={index}
@@ -141,6 +238,22 @@ export const ChatRoom = ({ chat, user }: ChatRoomProps) => {
           </button>
         </div>
       </div>
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          {isEdit ? (
+            <ModalEditChat
+              chat={chat}
+              handleModalToggle={closeModal}
+              handleUpdateChat={handleUpdateChat}
+            />
+          ) : (
+            <ModalConfirmDelete
+              handleModalToggle={closeModal}
+              handleConfirmDelete={handleDeleteChat}
+            />
+          )}
+        </Modal>
+      )}
     </div>
   );
 };

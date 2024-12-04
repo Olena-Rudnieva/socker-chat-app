@@ -1,51 +1,39 @@
-import { useEffect, useState } from 'react';
-
+import { useState } from 'react';
 import styles from './chats.module.css';
 import { Modal } from '../modal';
 import { ModalAddChat } from '../modalAddChat';
 import { Chat, User } from '../../types';
-import axios from 'axios';
-import { BASE_URL } from '../../constants/api';
 import { formatDateForList, getLastMessage } from '../../utils';
 
 interface ChatsProps {
   user: User | null;
+  chats: Chat[];
   handleChatSelect: (chat: Chat) => void;
+  handleNewChat: (chatData: {
+    firstName: string;
+    lastName: string;
+    userId: string;
+  }) => void;
 }
 
-export const Chats = ({ user, handleChatSelect }: ChatsProps) => {
-  const [chats, setChats] = useState<Chat[]>([]);
+export const Chats = ({
+  user,
+  handleChatSelect,
+  chats,
+  handleNewChat,
+}: ChatsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const fetchChats = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/api/chats`);
-      setChats(response.data);
-    } catch (error) {
-      console.error('Error fetching chats:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchChats();
-  }, []);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleModal = () => {
     setIsModalOpen((prevState) => !prevState);
   };
 
-  const handleNewChat = async (chatData: {
-    firstName: string;
-    lastName: string;
-    userId: string;
-  }) => {
-    try {
-      const response = await axios.post('/api/chats', chatData);
-      setChats((prevChats) => [...prevChats, response.data]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const filteredChats = chats.filter((chat) =>
+    `${chat.firstName} ${chat.lastName}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
@@ -55,18 +43,21 @@ export const Chats = ({ user, handleChatSelect }: ChatsProps) => {
           Create chat
         </button>
       </div>
+      <input
+        type="text"
+        placeholder="Search chats..."
+        className={styles.searchInput}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <ul>
-        {chats.map((chat) => (
+        {filteredChats.map((chat) => (
           <li
             key={chat._id}
             className={styles.chatItem}
             onClick={() => handleChatSelect(chat)}
           >
-            <img
-              src="https://via.placeholder.com/50"
-              alt="User avatar"
-              className={styles.avatar}
-            />
+            <img src="/user.png" alt="User avatar" className={styles.avatar} />
             <div className={styles.chatContent}>
               <div className={styles.userInfo}>
                 <strong>

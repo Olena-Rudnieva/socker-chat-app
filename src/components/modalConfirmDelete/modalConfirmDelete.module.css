@@ -1,0 +1,57 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.message {
+  margin-bottom: 30px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 30px;
+}
+
+.confirmButton {
+  padding: 10px 20px;
+  border-radius: 4px;
+  background-color: #60b7e3;
+  color: white;
+  border: 1px solid transparent;
+  border: none;
+  cursor: pointer;
+
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: white;
+    border: 1px solid #60b7e3;
+    color: #60b7e3;
+  }
+}
+
+.cancelButton {
+  padding: 10px 20px;
+  border-radius: 4px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+
+  border: 1px solid #60b7e3;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  &:hover {
+    background-color: #60b7e3;
+    color: white;
+  }
+}

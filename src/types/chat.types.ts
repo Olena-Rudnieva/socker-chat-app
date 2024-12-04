@@ -6,8 +6,8 @@ export interface Message {
 
 export interface Chat {
   _id: string;
-  avatar?: string;
   firstName: string;
   lastName: string;
+  userId: string;
   messages: Message[];
 }

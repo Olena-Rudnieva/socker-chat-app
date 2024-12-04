@@ -1,8 +1,6 @@
-// import axios from 'axios';
 import { User } from '../../types';
 import styles from './modalAddChat.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
-// import { BASE_URL } from '../../constants/api';
 
 interface ModalAddChatProps {
   user: User | null;
