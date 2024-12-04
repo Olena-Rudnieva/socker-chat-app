@@ -3,6 +3,8 @@ import styles from './header.module.css';
 import axios from 'axios';
 import { User } from '../../types';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 interface HeaderProps {
   user: User | null;
 }
@@ -12,7 +14,7 @@ export const Header = ({ user }: HeaderProps) => {
 
   const handleLogout = () => {
     axios
-      .post('/api/users/logout')
+      .post(`${BASE_URL}/api/users/logout`)
       .then(() => {
         localStorage.removeItem('userId');
         navigate('/');

@@ -2,8 +2,6 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import styles from './loginForm.module.css';
 import axios from 'axios';
-// import { BASE_URL } from '../../constants/api';
-// axios.defaults.baseURL = BASE_URL;
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 

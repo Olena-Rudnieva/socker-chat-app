@@ -6,7 +6,6 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { formatDate } from '../../utils';
-// import { BASE_URL } from '../../constants/api';
 import { Modal } from '../modal';
 import { ModalConfirmDelete } from '../modalConfirmDelete';
 import { ModalEditChat } from '../modalEditChat';

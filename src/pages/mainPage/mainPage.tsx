@@ -3,7 +3,6 @@ import { ChatRoom, Chats, Header } from '../../components';
 import { Chat, User } from '../../types';
 import styles from './mainPage.module.css';
 import axios from 'axios';
-// import { BASE_URL } from '../../constants/api';
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -53,7 +52,7 @@ const MainPage = () => {
     userId: string;
   }) => {
     try {
-      const response = await axios.post('/api/chats', chatData);
+      const response = await axios.post(`${BASE_URL}/api/chats`, chatData);
       setChats((prevChats) => [...prevChats, response.data]);
     } catch (error) {
       console.error(error);
